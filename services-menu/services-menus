@@ -1,0 +1,188 @@
+#!/bin/bash
+
+# Función para mostrar el menú principal
+mostrar_menu() {
+    clear
+    echo "==== MENÚ DE SERVICIOS ===="
+    echo "1. Listar contenido de un directorio"
+    echo "2. Crear archivo de texto con una línea"
+    echo "3. Comparar dos archivos de texto"
+    echo "4. Demostración del comando awk"
+    echo "5. Demostración del comando grep"
+    echo "6. Salir"
+    echo "=========================="
+    echo -n "Seleccione una opción (1-6): "
+}
+
+# Función para hacer pausa
+pausa() {
+    echo ""
+    read -p "Presione Enter para continuar..."
+}
+
+# Función para listar contenido de un directorio
+listar_directorio() {
+    echo ""
+    read -p "Ingrese la ruta absoluta del directorio a listar: " ruta
+    
+    echo ""
+    echo "Verificando si el directorio existe..."
+    if [ -d "$ruta" ]; then
+        echo "Listando el contenido de $ruta:"
+        ls -la "$ruta"
+    else
+        echo "Error: El directorio $ruta no existe o no es accesible."
+    fi
+    pausa
+}
+
+# Función para crear archivo de texto
+crear_archivo() {
+    echo ""
+    read -p "Ingrese el nombre del archivo a crear: " nombre_archivo
+    read -p "Ingrese la línea de texto a guardar: " texto
+    
+    echo "$texto" > "$nombre_archivo"
+    
+    echo ""
+    echo "Archivo creado correctamente."
+    echo "Contenido del archivo $nombre_archivo:"
+    cat "$nombre_archivo"
+    pausa
+}
+
+# Función para comparar dos archivos
+comparar_archivos() {
+    echo ""
+    read -p "Ingrese la ruta del primer archivo: " archivo1
+    read -p "Ingrese la ruta del segundo archivo: " archivo2
+    
+    echo ""
+    if [ -f "$archivo1" ] && [ -f "$archivo2" ]; then
+        echo "Comparando archivos $archivo1 y $archivo2:"
+        echo ""
+        diff "$archivo1" "$archivo2"
+        
+        if [ $? -eq 0 ]; then
+            echo "Los archivos son idénticos."
+        else
+            echo "Los archivos son diferentes (ver diferencias arriba)."
+        fi
+    else
+        echo "Error: Uno o ambos archivos no existen o no son accesibles."
+    fi
+    pausa
+}
+
+# Función para demostrar el comando awk
+demo_awk() {
+    echo ""
+    echo "Demostración del comando awk:"
+    echo ""
+    echo "Primero, creemos un archivo de ejemplo para la demostración..."
+    
+    # Crear archivo de ejemplo
+    cat > ejemplo_awk.txt << EOF
+Juan 25 Madrid
+María 30 Barcelona
+Pedro 22 Valencia
+Ana 28 Sevilla
+Luis 35 Madrid
+EOF
+    
+    echo "Archivo ejemplo_awk.txt creado con este contenido:"
+    cat ejemplo_awk.txt
+    echo ""
+    
+    echo "1. Mostrar solo la primera columna (nombres):"
+    awk '{print $1}' ejemplo_awk.txt
+    echo ""
+    
+    echo "2. Mostrar solo personas de Madrid:"
+    awk '$3 == "Madrid" {print $0}' ejemplo_awk.txt
+    echo ""
+    
+    echo "3. Calcular la edad promedio:"
+    awk '{ sum += $2 } END { print "Edad promedio:", sum/NR }' ejemplo_awk.txt
+    echo ""
+    
+    echo "4. Mostrar registros con formato personalizado:"
+    awk '{print "Nombre: " $1 ", Edad: " $2 ", Ciudad: " $3}' ejemplo_awk.txt
+    pausa
+}
+
+# Función para demostrar el comando grep
+demo_grep() {
+    echo ""
+    echo "Demostración del comando grep:"
+    echo ""
+    echo "Primero, creemos un archivo de ejemplo para la demostración..."
+    
+    # Crear archivo de ejemplo
+    cat > ejemplo_grep.txt << EOF
+Este es un archivo de ejemplo para mostrar grep.
+GREP es una herramienta muy útil en Linux.
+Permite buscar patrones en archivos de texto.
+Con grep podemos filtrar salidas de comandos.
+Grep soporta expresiones regulares.
+El nombre grep viene de "Global Regular Expression Print".
+EOF
+    
+    echo "Archivo ejemplo_grep.txt creado con este contenido:"
+    cat ejemplo_grep.txt
+    echo ""
+    
+    echo "1. Buscar líneas que contienen la palabra 'grep' (sin distinción entre mayúsculas y minúsculas):"
+    grep -i "grep" ejemplo_grep.txt
+    echo ""
+    
+    echo "2. Contar cuántas líneas contienen la palabra 'es':"
+    grep -c "es" ejemplo_grep.txt
+    echo ""
+    
+    echo "3. Mostrar número de línea en los resultados:"
+    grep -n "Linux" ejemplo_grep.txt
+    echo ""
+    
+    echo "4. Buscar palabras completas (no parte de otras palabras):"
+    grep -w "es" ejemplo_grep.txt
+    echo ""
+    
+    echo "5. Buscar usando expresiones regulares (líneas que comienzan con 'El'):"
+    grep "^El" ejemplo_grep.txt
+    pausa
+}
+
+# Bucle principal del programa
+while true; do
+    mostrar_menu
+    read opcion
+    
+    case $opcion in
+        1)
+            listar_directorio
+            ;;
+        2)
+            crear_archivo
+            ;;
+        3)
+            comparar_archivos
+            ;;
+        4)
+            demo_awk
+            ;;
+        5)
+            demo_grep
+            ;;
+        6)
+            echo ""
+            echo "¡Gracias por usar el script de servicios!"
+            exit 0
+            ;;
+        *)
+            echo ""
+            echo "Opción inválida. Por favor, seleccione una opción válida (1-6)."
+            pausa
+            ;;
+    esac
+done
